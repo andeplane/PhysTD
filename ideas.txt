@@ -15,3 +15,7 @@ Orbit defense
  - Resources are gained by killing opponents and mining
  - Defense tech gained by science research
  - 
+
+
+Fx = GMm/r^2 * ux
+Fy = GMm/r^2 * uy

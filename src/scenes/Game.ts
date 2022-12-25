@@ -7,137 +7,105 @@ type GameObject = Phaser.GameObjects.GameObject
 export default class Demo extends Phaser.Scene {
   gameOver: boolean
   score: number
+  asteroids: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody[]
+  asteroidsGroup?: Phaser.Physics.Arcade.Group
   scoreText?: Phaser.GameObjects.Text
-  player?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
+  planet?: Phaser.Types.Physics.Arcade.ImageWithStaticBody
   cursors?: Phaser.Types.Input.Keyboard.CursorKeys
-  stars?: Phaser.Physics.Arcade.Group
-  bombs?: Phaser.Physics.Arcade.Group
+  lastUpdate: Date
 
   constructor() {
     super('GameScene');
     this.gameOver = false
     this.score = 0
+    this.asteroids = []
+    this.lastUpdate = new Date()
   }
 
   preload() {
     this.load.image('logo', 'assets/phaser3-logo.png');
     this.load.image('sky', 'assets/sky.png');
     this.load.image('ground', 'assets/platform.png');
+    this.load.image('planet', 'assets/planet.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('asteroids', 'assets/asteroids.png', { frameWidth: 125, frameHeight: 125 });
   }
 
   create() {
     //  A simple background for our game
     this.add.image(400, 300, 'sky');
 
-    //  The platforms group contains the ground and the 2 ledges we can jump on
-    const platforms = this.physics.add.staticGroup();
-    
-    // The player and its settings
-    this.player = this.physics.add.sprite(100, 450, 'dude');
-    
     //  Input Events
     this.cursors = this.input.keyboard.createCursorKeys();
-
+    
     //  The score
     this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px' });
-
-    //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-    this.stars = this.physics.add.group({
-        key: 'star',
-        repeat: 11,
-        setXY: { x: 12, y: 0, stepX: 70 }
-    });
     
-    this.bombs = this.physics.add.group();
-
     //  Here we create the ground.
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+    // const planet = platforms.create(400, 400, 'planet').setScale(0.3).refreshBody();
+    this.planet = this.physics.add.staticImage(400, 400, 'planet').setScale(0.1).refreshBody()
+    this.planet.setCircle(250*0.1)
+    
+    // const N = 100
+    // for (let i = 0; i < N; i++) {
+    //   const radius = 200 + Math.random() * 200
+    //   const theta = Math.random() * 2 * Math.PI
+    //   const x = 400 + Math.sin(theta)*radius
+    //   const y = 400 + Math.cos(theta)*radius
+    //   const asteroid = this.physics.add.sprite(x, y, 'asteroids', Math.floor(Math.random() * 16)).setScale(0.1)
+    //   this.asteroids.push(asteroid)
+    // }
 
-    //  Now let's create some ledges
-    platforms.create(600, 400, 'ground');
-    platforms.create(50, 250, 'ground');
-    platforms.create(750, 220, 'ground');
+    this.asteroidsGroup = this.physics.add.group()
+    this.physics.add.collider(this.planet, this.asteroidsGroup);
+    // // this.physics.add.collider(asteroidsGroup, asteroidsGroup);
+    // this.asteroids.forEach(asteroid => {
+    //   asteroid.setVelocityX(200 * (Math.random() - 0.5))
+    //   asteroid.setVelocityY(200 * (Math.random() - 0.5))
+    //   asteroid.setBounce(1.0)
+    // })
 
-    //  Player physics properties. Give the little guy a slight bounce.
-    this.player.setBounce(0.2);
-    this.player.setCollideWorldBounds(true);
-
-    //  Our player animations, turning, walking left and walking right.
-    this.anims.create({
-        key: 'left',
-        frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: 'turn',
-        frames: [ { key: 'dude', frame: 4 } ],
-        frameRate: 20
-    });
-
-    this.anims.create({
-        key: 'right',
-        frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.stars.children.iterate(function (child) {
-        //  Give each star a slightly different bounce
-        // @ts-ignore
-        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-
-    });
-
-    //  Collide the player and the stars with the platforms
-    this.physics.add.collider(this.player, platforms);
-    this.physics.add.collider(this.stars, platforms);
-    this.physics.add.collider(this.bombs, platforms);
-
-    //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-    this.physics.add.overlap(this.player, this.stars, this.collectStar, undefined, this);
-
-    this.physics.add.collider(this.player, this.bombs, this.hitBomb, undefined, this);
+    // this.physics.add.collider(this.player, this.bombs, this.hitBomb, undefined, this);
   }
 
   update() {
-    if (this.gameOver || !this.cursors || !this.player)
+    if (this.gameOver || !this.cursors || !this.planet)
     {
         return;
     }
 
-    if (this.cursors.left.isDown)
-    {
-      this.player.setVelocityX(-160);
-
-      this.player.anims.play('left', true);
+    const now = (new Date())
+    const delta = now.valueOf() - this.lastUpdate.valueOf()
+    if (delta > 500) {
+      this.lastUpdate = now
+      const x = 1000
+      const y = 200
+      const asteroid = this.physics.add.sprite(x, y, 'asteroids', Math.floor(Math.random() * 16)).setScale(0.1)
+      this.asteroids.push(asteroid)
+      this.asteroidsGroup?.add(asteroid)
+      asteroid.setVelocityX(-100)
+      asteroid.setVelocityY(-20)
     }
-    else if (this.cursors.right.isDown)
-    {
-      this.player.setVelocityX(160);
-
-      this.player.anims.play('right', true);
-    }
-    else
-    {
-      this.player.setVelocityX(0);
-
-      this.player.anims.play('turn');
-    }
-
-    if (this.cursors.up.isDown && this.player.body.touching.down)
-    {
-      this.player.setVelocityY(-330);
-    }
+    
+    // Calculate gravity as the normalised vector from the ship to the planet
+    this.asteroids.forEach(asteroid => {
+      if (!this.planet) {
+        return
+      }
+      const delta = new Phaser.Math.Vector2(this.planet.body.center.x - asteroid.body.center.x, this.planet.body.center.y - asteroid.body.center.y);
+      const deltaLength = delta.lengthSq()
+      delta.normalize()
+      delta.divide(new Phaser.Math.Vector2(deltaLength,deltaLength))
+      const strength = 10000000.0
+      asteroid.body.setGravity(strength*delta.x, strength*delta.y)
+    })
   }
 
   collectStar(player: GameObjectWithBody, star: GameObjectWithBody) {
-    if ( !this.stars || !this.bombs || !this.scoreText) {
+    if (!this.scoreText) {
       return
     }
 
@@ -147,38 +115,5 @@ export default class Demo extends Phaser.Scene {
     //  Add and update the score
     this.score += 10;
     this.scoreText.setText('Score: ' + this.score);
-
-    if (this.stars.countActive(true) === 0)
-    {
-        //  A new batch of stars to collect
-        this.stars.children.iterate(function (child) {
-            //@ts-ignore
-            child.enableBody(true, child.x, 0, true, true);
-
-        });
-        //@ts-ignore
-        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
-        var bomb = this.bombs.create(x, 16, 'bomb');
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-        bomb.allowGravity = false;
-
-    }
-  }
-
-  hitBomb() {
-    if (!this.player) {
-      return
-    }
-
-    this.physics.pause();
-
-    this.player.setTint(0xff0000);
-
-    this.player.anims.play('turn');
-
-    this.gameOver = true;
   }
 }
