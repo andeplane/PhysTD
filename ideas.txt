@@ -9,3 +9,9 @@ Cool mechanics:
  - reflections
  - dimensions
  - 
+
+Orbit defense
+ - You have a planet to defend
+ - Resources are gained by killing opponents and mining
+ - Defense tech gained by science research
+ - 
