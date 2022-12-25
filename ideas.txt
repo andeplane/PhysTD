@@ -1,0 +1,11 @@
+Physics based
+ - collisions
+ - gravity
+
+Cool mechanics:
+ - portal
+ - tower defence
+ - bounce
+ - reflections
+ - dimensions
+ - 
