@@ -6,114 +6,170 @@ type GameObject = Phaser.GameObjects.GameObject
 
 export default class Demo extends Phaser.Scene {
   gameOver: boolean
-  score: number
+  population: number
   asteroids: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody[]
   asteroidsGroup?: Phaser.Physics.Arcade.Group
-  scoreText?: Phaser.GameObjects.Text
-  planet?: Phaser.Types.Physics.Arcade.ImageWithStaticBody
+  populationText?: Phaser.GameObjects.Text
+  planet?: Phaser.Types.Physics.Arcade.ImageWithDynamicBody
+  moon?: Phaser.Types.Physics.Arcade.ImageWithDynamicBody
   cursors?: Phaser.Types.Input.Keyboard.CursorKeys
-  lastUpdate: Date
+  fire?: Phaser.GameObjects.Particles.ParticleEmitterManager
+  lastAddUpdate: Date
+  lastFireUpdate: Date
 
   constructor() {
     super('GameScene');
     this.gameOver = false
-    this.score = 0
+    this.population = 10
     this.asteroids = []
-    this.lastUpdate = new Date()
+    //@ts-ignore
+    window.asteroids = this.asteroids
+    this.lastAddUpdate = new Date()
+    this.lastFireUpdate = new Date()
   }
 
   preload() {
-    this.load.image('logo', 'assets/phaser3-logo.png');
+    this.load.image('fire', 'assets/particles/muzzleflash3.png');
     this.load.image('sky', 'assets/sky.png');
-    this.load.image('ground', 'assets/platform.png');
     this.load.image('planet', 'assets/planet.png');
-    this.load.image('star', 'assets/star.png');
-    this.load.image('bomb', 'assets/bomb.png');
-    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('asteroids', 'assets/asteroids.png', { frameWidth: 125, frameHeight: 125 });
   }
 
   create() {
     //  A simple background for our game
     this.add.image(400, 300, 'sky');
+    this.fire = this.add.particles('fire');
 
-    //  Input Events
     this.cursors = this.input.keyboard.createCursorKeys();
     
-    //  The score
-    this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px' });
+    this.populationText = this.add.text(16, 16, `Population: ${this.population}`, { fontSize: '32px' });
     
-    //  Here we create the ground.
-    //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    // const planet = platforms.create(400, 400, 'planet').setScale(0.3).refreshBody();
-    this.planet = this.physics.add.staticImage(400, 400, 'planet').setScale(0.1).refreshBody()
-    this.planet.setCircle(250*0.1)
-    
-    // const N = 100
-    // for (let i = 0; i < N; i++) {
-    //   const radius = 200 + Math.random() * 200
-    //   const theta = Math.random() * 2 * Math.PI
-    //   const x = 400 + Math.sin(theta)*radius
-    //   const y = 400 + Math.cos(theta)*radius
-    //   const asteroid = this.physics.add.sprite(x, y, 'asteroids', Math.floor(Math.random() * 16)).setScale(0.1)
-    //   this.asteroids.push(asteroid)
-    // }
-
+    this.planet = this.physics.add.image(400, 400, 'planet').setScale(0.2).refreshBody()
+    this.planet.setName("Planet")
+    this.planet.setCircle(250)
+    this.planet.body.setAllowGravity(false)
+    this.planet.setMass(10000)
+    this.planet.setMaxVelocity(0, 0)
+    this.planet.setBounce(1.0)
     this.asteroidsGroup = this.physics.add.group()
-    this.physics.add.collider(this.planet, this.asteroidsGroup);
-    // // this.physics.add.collider(asteroidsGroup, asteroidsGroup);
-    // this.asteroids.forEach(asteroid => {
-    //   asteroid.setVelocityX(200 * (Math.random() - 0.5))
-    //   asteroid.setVelocityY(200 * (Math.random() - 0.5))
-    //   asteroid.setBounce(1.0)
-    // })
+    this.physics.add.collider(this.planet, this.asteroidsGroup, this.collidePlanet);
+    
+    this.moon = this.physics.add.image(600, 400, 'planet').setScale(0.05).refreshBody()
+    this.moon.setName("Moon")
+    this.moon.setCircle(250)
+    this.moon.setVelocityY(-200)
+    this.moon.setMass(10000)
+    this.moon.setBounce(1.0)
+    this.physics.add.collider(this.moon, this.asteroidsGroup, this.collidePlanet);
+    
+    var FKey = this.input.keyboard.addKey('F');
 
-    // this.physics.add.collider(this.player, this.bombs, this.hitBomb, undefined, this);
+    FKey.on('down', () =>  {
+        if (this.scale.isFullscreen)
+        {
+            this.scale.stopFullscreen();
+        }
+        else
+        {
+            this.scale.startFullscreen();
+        }
+    });
   }
 
   update() {
-    if (this.gameOver || !this.cursors || !this.planet)
+    if (this.gameOver || !this.cursors || !this.planet || !this.moon)
     {
         return;
     }
 
+    // Add asteroids
     const now = (new Date())
-    const delta = now.valueOf() - this.lastUpdate.valueOf()
-    if (delta > 500) {
-      this.lastUpdate = now
+    const delta = now.valueOf() - this.lastAddUpdate.valueOf()
+    if (delta > 500 && this.asteroids.length < 100) {
+      this.lastAddUpdate = now
       const x = 1000
-      const y = 200
+      const y = 200 + 20 * Math.random()
       const asteroid = this.physics.add.sprite(x, y, 'asteroids', Math.floor(Math.random() * 16)).setScale(0.1)
       this.asteroids.push(asteroid)
       this.asteroidsGroup?.add(asteroid)
-      asteroid.setVelocityX(-100)
-      asteroid.setVelocityY(-20)
+      asteroid.setAngularVelocity(720 * (Math.random() - 0.5) )
+      asteroid.setVelocityX(-100 - 20 * Math.random())
+      asteroid.setVelocityY(-20 - 20 * Math.random())
+      asteroid.setMass(0.1)
+      asteroid.setBounce(1.0)
     }
     
-    // Calculate gravity as the normalised vector from the ship to the planet
+    // Calculate asteroid gravity
     this.asteroids.forEach(asteroid => {
       if (!this.planet) {
         return
       }
       const delta = new Phaser.Math.Vector2(this.planet.body.center.x - asteroid.body.center.x, this.planet.body.center.y - asteroid.body.center.y);
-      const deltaLength = delta.lengthSq()
+      const deltaLength = delta.length()
       delta.normalize()
-      delta.divide(new Phaser.Math.Vector2(deltaLength,deltaLength))
+      delta.scale(1.0/(deltaLength*deltaLength))
       const strength = 10000000.0
       asteroid.body.setGravity(strength*delta.x, strength*delta.y)
+      let scale = 0.99995
+      if (deltaLength < 100) {
+        scale -= 0.001 * (100-deltaLength)/100
+        asteroid.body.velocity.scale(scale)
+      }
     })
-  }
 
-  collectStar(player: GameObjectWithBody, star: GameObjectWithBody) {
-    if (!this.scoreText) {
-      return
+    {
+      const delta = new Phaser.Math.Vector2(this.planet.body.center.x - this.moon.body.center.x, this.planet.body.center.y - this.moon.body.center.y);
+      const deltaLength = delta.length()
+      delta.normalize()
+      delta.scale(1.0/(deltaLength*deltaLength))
+      const strength = 10000000.0
+      this.moon.body.setGravity(strength*delta.x, strength*delta.y)
     }
 
-    //@ts-ignore
-    star.disableBody(true, true);
+    // Fire defense
+    let closestAsteroid = undefined
+    let distanceSquared = 1e9
+    this.asteroids.forEach(asteroid => {
+      if (!this.planet) {
+        return
+      }
+      const delta = new Phaser.Math.Vector2(this.planet.body.center.x - asteroid.body.center.x, this.planet.body.center.y - asteroid.body.center.y);
+      if (delta.lengthSq() < distanceSquared) {
+        closestAsteroid = asteroid
+        distanceSquared = delta.lengthSq()
+      }
+    })
 
-    //  Add and update the score
-    this.score += 10;
-    this.scoreText.setText('Score: ' + this.score);
+  }
+
+  collidePlanet = (planet: GameObjectWithBody, asteroid: GameObjectWithBody) => {
+    if (!this.populationText || !this.fire) {
+      return
+    }
+    
+    //@ts-ignore
+    asteroid.disableBody(true, true);
+    
+    this.fire.createEmitter({
+        alpha: { start: 1, end: 0 },
+        scale: { start: 0.5, end: 2.5 },
+        tint: { start: 0xff945e, end: 0xff945e },
+        speed: 20,
+        accelerationY: -300,
+        angle: { min: -85, max: -95 },
+        rotate: { min: -180, max: 180 },
+        lifespan: { min: 1000, max: 1100 },
+        blendMode: 'ADD',
+        frequency: 110,
+        maxParticles: 10,
+        x: asteroid.body.position.x,
+        y: asteroid.body.position.y,
+    });
+
+    if (planet.name === "Planet") {
+      //  Add and update the score
+      this.population -= 1;
+      this.populationText.setText('Population: ' + this.population);
+    }
   }
 }
