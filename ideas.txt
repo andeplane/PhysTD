@@ -10,12 +10,52 @@ Cool mechanics:
  - dimensions
  - 
 
-Orbit defense
- - You have a planet to defend
- - Resources are gained by killing opponents and mining
- - Defense tech gained by science research
+Asteroid defense game play summary
+ - You have a planet to defend againt the constant threat of asteroid belts
+ - Resources are gained by destroying asteroids, which will your people will mine
+ - Resource types: Diamond, gold, silver, ++
+ - Defense tech is gained by science research
+ - An asteroid lose some of its energy when it comes within the atmosphere, which is why they eventually will collide
+ - Health points is population, people die when planet is hit
+ - Population increases over time. This increases how fast local mining happens
+
+Attack mechanisms:
+ - Meteors
+ - Asteroids
+ - Comets
+ - Alien space ships
+
+
+Defense mechanisms:
+ - Three main types
+    - Laser turrets on rotating planet
+     - Fast and accurate
+     - 
+    - Orbiting defense rockets
+     - Can have all types of orbits.
+     - Close orbit is fast, but less time close to asteroid
+     - Distant orbit stays longer in same place, but swipes less area
+     - Elliptic orbits is a combination
+    - Moons
+     -  they will take the hit, but you won't get resources without special mining ships)
+     -  they change orbit of asteroids due to gravitational pull 
+    - Special upgrades
+     - nuclear (various radius and strength)
+     - relativity boost (slows time for asteroids)
+     - 
+
+ - Weapons:
+   - Lasers
+   - Nuclear
+   - 
+
+GFX:
+ - Comets have particles behind them
+ - Explosion when comets/asteroids collide with planet
  - 
 
-
-Fx = GMm/r^2 * ux
-Fy = GMm/r^2 * uy
+Levels:
+Level 1 (intro / tutorial)
+ - There are no defense mechanisms. Population starts at 10
+ - The asteroids will just hit the earth, reducing the population to 5
+ - Before level 2, you can research 
