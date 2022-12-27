@@ -54,13 +54,13 @@ export default class Demo extends Phaser.Scene {
     this.asteroidsGroup = this.physics.add.group()
     this.physics.add.collider(this.planet, this.asteroidsGroup, this.collidePlanet);
     
-    this.moon = this.physics.add.image(600, 400, 'planet').setScale(0.05).refreshBody()
-    this.moon.setName("Moon")
-    this.moon.setCircle(250)
-    this.moon.setVelocityY(-200)
-    this.moon.setMass(10000)
-    this.moon.setBounce(1.0)
-    this.physics.add.collider(this.moon, this.asteroidsGroup, this.collidePlanet);
+    // this.moon = this.physics.add.image(600, 400, 'planet').setScale(0.05).refreshBody()
+    // this.moon.setName("Moon")
+    // this.moon.setCircle(250)
+    // this.moon.setVelocityY(-200)
+    // this.moon.setMass(10000)
+    // this.moon.setBounce(1.0)
+    // this.physics.add.collider(this.moon, this.asteroidsGroup, this.collidePlanet);
     
     var FKey = this.input.keyboard.addKey('F');
 
@@ -77,7 +77,7 @@ export default class Demo extends Phaser.Scene {
   }
 
   update() {
-    if (this.gameOver || !this.cursors || !this.planet || !this.moon)
+    if (this.gameOver || !this.cursors || !this.planet)
     {
         return;
     }
@@ -117,7 +117,7 @@ export default class Demo extends Phaser.Scene {
       }
     })
 
-    {
+    if (this.moon) {
       const delta = new Phaser.Math.Vector2(this.planet.body.center.x - this.moon.body.center.x, this.planet.body.center.y - this.moon.body.center.y);
       const deltaLength = delta.length()
       delta.normalize()
