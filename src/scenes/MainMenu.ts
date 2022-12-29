@@ -27,7 +27,7 @@ export default class MainMenuScene extends Phaser.Scene {
 
         // Play button
         const playButton = this.add.image(width * 0.5, height * 0.5, 'button')
-            .setDisplaySize(250, 100)
+            .setDisplaySize(250, 100).setInteractive()
         
         this.add.text(playButton.x, playButton.y, 'Play')
             .setOrigin(0.5).setFontSize(30).setColor('black')
@@ -51,15 +51,26 @@ export default class MainMenuScene extends Phaser.Scene {
         this.selectButton(0)
 
         playButton.on('selected', () => {
-            console.log('play')
             this.scene.start('Level1')
+        })
+
+        playButton.on('pointerdown', () => {
+            this.scene.start('Level1')    
         })
     
         settingsButton.on('selected', () => {
             console.log('settings')
         })
     
+        settingsButton.on('pointerdown', () => {
+            console.log('settings')
+        })
+
         creditsButton.on('selected', () => {
+            console.log('credits')
+        })
+    
+        creditsButton.on('pointerdown', () => {
             console.log('credits')
         })
 	}

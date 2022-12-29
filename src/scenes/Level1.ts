@@ -51,6 +51,7 @@ export default class Level1 extends Phaser.Scene {
 
     const planet = PlanetFactory.Create(this, {x: 400, y: 512, name: "Planet", texture: "earth"})
     this.physics.add.collider(planet, AsteroidFactory.group, this.collidePlanet);
+    this.physics.add.collider(AsteroidFactory.group, AsteroidFactory.group);
   }
 
   update() {
