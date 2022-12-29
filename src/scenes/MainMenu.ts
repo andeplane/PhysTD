@@ -53,9 +53,9 @@ export default class MainMenuScene extends Phaser.Scene {
         playButton.on('selected', () => {
             this.scene.start('Level1')
         })
-
+        
         playButton.on('pointerdown', () => {
-            this.scene.start('Level1')    
+            this.scene.start('Level1')
         })
     
         settingsButton.on('selected', () => {

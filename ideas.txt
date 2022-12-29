@@ -1,3 +1,19 @@
+Inspiration codes: https://github.com/samme/cavern-quest
+
+ChatGPT prompts:
+ - what are potential defense mechanisms against an asteroid colliding with the earth
+There are several potential defense mechanisms that could be used to mitigate the impact of an asteroid colliding with the Earth. These include:
+ Deflection: This involves changing the asteroid's orbit so that it misses the Earth. This could be done by using a spacecraft to collide with the asteroid and alter its course, or by using a gravitational tractor to slowly change its trajectory over time.
+ Explosion: Another option is to explode the asteroid before it reaches the Earth. This could be done using nuclear weapons, but the risks associated with this approach would need to be carefully considered.
+ Evacuation: In some cases, it may be possible to evacuate the area where the asteroid is expected to impact. This would involve moving people and critical infrastructure out of the path of the asteroid.
+ Shielding: Another option is to use some type of shield to deflect or absorb the energy of the impact. This could include using a space-based shield or deploying a network of satellites to intercept the asteroid.
+
+Write a news like paragraph telling that meteors are going to crash with the eart
+Attention Earthlings: A massive meteor is hurtling towards our planet and is expected to make impact in the next 24 hours. Scientists and astronomers are closely monitoring the trajectory of the meteor and have determined that it is on a collision course with the Earth. The size and speed of the meteor make it a potential threat to life and property, and authorities are urging everyone to take necessary precautions. Emergency response teams are being mobilized and evacuation plans are being put in place for those living in the predicted impact zone. Stay tuned for updates and follow any instructions from local authorities to ensure your safety.
+
+
+It's worth noting that these approaches would need to be carefully planned and implemented in order to be effective.
+
 Physics based
  - collisions
  - gravity
@@ -64,3 +80,23 @@ Level 1 (intro / tutorial)
  - There are no defense mechanisms. Population starts at 10
  - The asteroids will just hit the earth, reducing the population to 5
  - Before level 2, you can research 
+
+What is a wave?
+ - A well defined (statistical) set of objects going towards the planet
+ - A wave has a duration (until the next wave)
+ - Each level i has N_i waves
+ - Configured as a JSON:
+   {
+      'name': 'Wave 1',
+      'decsription': 'First wave',
+      'items': [
+         {
+            'type': 'asteroid',
+            'sizeRange': [5,20],
+            '
+         },
+         {
+            'type': 'alien'
+         }
+      ]
+   }

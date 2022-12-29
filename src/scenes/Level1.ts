@@ -12,7 +12,7 @@ let AsteroidFactory: Asteroid|undefined
 export default class Level1 extends Phaser.Scene {
   gameOver: boolean
   population: number
-  populationText?: Phaser.GameObjects.Text
+  // populationText?: Phaser.GameObjects.Text
   moon?: Phaser.Types.Physics.Arcade.ImageWithDynamicBody
   cursors?: Phaser.Types.Input.Keyboard.CursorKeys
   fire?: Phaser.GameObjects.Particles.ParticleEmitterManager
@@ -20,7 +20,8 @@ export default class Level1 extends Phaser.Scene {
   lastFireUpdate: Date
 
   constructor() {
-    super('Level1');
+    super({ key: 'Level1', active: false });
+
     this.gameOver = false
     this.population = 10
     
@@ -39,25 +40,60 @@ export default class Level1 extends Phaser.Scene {
 
   create() {
     const { width, height } = this.scale
-		this.add.image(width * 0.5, height * 0.5, 'stars');
+		this.add.image(width * 0.5, height * 0.5, 'stars').setScrollFactor(0.2, 0.2)
     this.fire = this.add.particles('fire');
 
     this.cursors = this.input.keyboard.createCursorKeys();
     
-    this.populationText = this.add.text(16, 16, `Population: ${this.population}`, { fontSize: '32px' });
-
+    // this.populationText = this.add.text(16, 16, `Population: ${this.population}`, { fontSize: '32px' })
+    
     PlanetFactory = new Planet(this)
     AsteroidFactory = new Asteroid(this, PlanetFactory)
 
     const planet = PlanetFactory.Create(this, {x: 400, y: 512, name: "Planet", texture: "earth"})
     this.physics.add.collider(planet, AsteroidFactory.group, this.collidePlanet);
     this.physics.add.collider(AsteroidFactory.group, AsteroidFactory.group);
+
+    this.input.on("wheel",  (pointer: any, gameObjects: any, deltaX: any, deltaY: any, deltaZ: any) => {
+      if (deltaY > 0) {
+          const magnitude = Math.abs(deltaY)/10
+          var newZoom = this.cameras.main.zoom -.01*magnitude;
+          if (newZoom > 1.0) {
+              this.cameras.main.zoom = newZoom;     
+          }
+      }
+    
+      if (deltaY < 0) {
+        const magnitude = Math.abs(deltaY)/10
+          var newZoom = this.cameras.main.zoom +.01*magnitude;
+          if (newZoom < 2.0) {
+              this.cameras.main.zoom = newZoom;     
+          }
+      }
+
+      // this.cameras.main.centerOn(PlanetFactory?.planets[0].body.position.x, PlanetFactory?.planets[0].body.position.y);
+      // this.cameras.main.pan(pointer.worldX, pointer.worldY, 2000, "Power2");
+    
+    });
+
+    this.input.on('pointermove', (pointer: any) => {
+        if (!pointer.isDown) return;
+
+        this.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) / this.cameras.main.zoom;
+        this.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) / this.cameras.main.zoom;
+    });
+
+    var uiScene = this.scene.get('Game-UI')
+    this.scene.launch('Game-UI')
+
+    this.cameras.main.setZoom(2)
   }
 
   update() {
+    
     if (this.gameOver || !this.cursors)
     {
-        return;
+      return;
     }
 
     if (AsteroidFactory) {
@@ -78,7 +114,7 @@ export default class Level1 extends Phaser.Scene {
   }
 
   collidePlanet = (planet: GameObjectWithBody, asteroid: GameObjectWithBody) => {
-    if (!this.populationText || !this.fire) {
+    if (!this.fire) {
       return
     }
     
@@ -104,7 +140,7 @@ export default class Level1 extends Phaser.Scene {
     if (planet.name === "Planet") {
       //  Add and update the score
       this.population -= 1;
-      this.populationText.setText('Population: ' + this.population);
+      // this.populationText.setText('Population: ' + this.population);
     }
   }
 }
