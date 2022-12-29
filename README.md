@@ -2,7 +2,7 @@
   <br>
   <a href="https://github.com/geocine/phaser3-rollup-typescript#readme"><img src="https://i.imgur.com/6lcIxDs.png" alt="header" width="600"/></a>
   <br>
-  Phaser 3 TypeScript Starter
+  Astro Defender
   <br>
 </h1>
 
