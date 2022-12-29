@@ -6,8 +6,8 @@ export default {
   title: 'Astro defender',
   url: 'https://andeplane.github.io/astrodefender',
   scale: {
-    width: 800,
-    height: 800,
+    width: 1024,
+    height: 1024,
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
