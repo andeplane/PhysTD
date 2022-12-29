@@ -31,10 +31,10 @@ export default class Demo extends Phaser.Scene {
   preload() {
     this.load.setBaseURL(window.location.href)
     this.load.path = 'assets/'
-    this.load.image('fire', 'assets/particles/muzzleflash3.png');
-    this.load.image('sky', 'assets/sky.png');
-    this.load.image('earth', 'assets/planets/earth_generated.png');
-    this.load.spritesheet('asteroids', 'assets/asteroids.png', { frameWidth: 125, frameHeight: 125 });
+    this.load.image('fire', 'particles/muzzleflash3.png');
+    this.load.image('sky', 'sky.png');
+    this.load.image('earth', 'planets/earth_generated.png');
+    this.load.spritesheet('asteroids', 'asteroids.png', { frameWidth: 125, frameHeight: 125 });
   }
 
   create() {
