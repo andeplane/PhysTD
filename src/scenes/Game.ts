@@ -71,30 +71,6 @@ export default class Demo extends Phaser.Scene {
     if (PlanetFactory) {
       PlanetFactory.Update()
     }
-    
-    // if (this.moon) {
-    //   const delta = new Phaser.Math.Vector2(this.planet.body.center.x - this.moon.body.center.x, this.planet.body.center.y - this.moon.body.center.y);
-    //   const deltaLength = delta.length()
-    //   delta.normalize()
-    //   delta.scale(1.0/(deltaLength*deltaLength))
-    //   const strength = 10000000.0
-    //   this.moon.body.setGravity(strength*delta.x, strength*delta.y)
-    // }
-
-    // // Fire defense
-    // let closestAsteroid = undefined
-    // let distanceSquared = 1e9
-    // this.asteroids.forEach(asteroid => {
-    //   if (!this.planet) {
-    //     return
-    //   }
-    //   const delta = new Phaser.Math.Vector2(this.planet.body.center.x - asteroid.body.center.x, this.planet.body.center.y - asteroid.body.center.y);
-    //   if (delta.lengthSq() < distanceSquared) {
-    //     closestAsteroid = asteroid
-    //     distanceSquared = delta.lengthSq()
-    //   }
-    // })
-
   }
 
   collidePlanet = (planet: GameObjectWithBody, asteroid: GameObjectWithBody) => {
