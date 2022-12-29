@@ -43,6 +43,9 @@ Defense mechanisms:
      - nuclear (various radius and strength)
      - relativity boost (slows time for asteroids)
      - Mirrors / portals
+    - Atmosphere
+     - People on the planet can create an atmosphere that will act like friction
+    - Magnetic fields 
 
  - Weapons:
    - Lasers (keywords: vaporize, X MW, project, flux, heat, hunter, )

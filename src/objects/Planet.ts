@@ -21,17 +21,20 @@ export default class Planet extends GameObject {
 
     }
     
-    Create(scene: Phaser.Scene, {x, y, name}: CreateProps) {
-        const planet = scene.physics.add.image(x, y, 'planet').setScale(0.2).refreshBody()
-        planet.setName(name)
-        planet.setCircle(250)
-        planet.body.setAllowGravity(false)
-        planet.setMass(10000)
-        planet.setMaxVelocity(0, 0)
-        planet.setBounce(1.0)
-
+    Create(scene: Phaser.Scene, {x, y, name, texture}: CreateProps) {
+        const planet = scene.physics.add.image(x, y, texture).setScale(0.25).refreshBody()
         this.planets.push(planet)
         this.group.add(planet)
+
+        planet.setName(name)
+        planet.setCircle(256)
+        planet.body.setAllowGravity(false)
+        planet.setMass(100000)
+        planet.setMaxVelocity(0, 0)
+        planet.setBounce(1.0)
+        planet.disableInteractive()
+        planet.setAngularVelocity(0.1 * 720 * (Math.random() - 0.5) )
+
         return planet
     }
 
@@ -40,6 +43,8 @@ export default class Planet extends GameObject {
     }
 
     Update() {
-
+        this.planets.forEach(planet => {
+            planet.setAcceleration(0, 0)
+        })
     }
 }

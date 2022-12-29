@@ -30,7 +30,7 @@ export default class Asteroid extends GameObject {
         asteroid.setAngularVelocity(720 * (Math.random() - 0.5) )
         asteroid.setVelocityX(-100 - 20 * Math.random())
         asteroid.setVelocityY(-20 - 20 * Math.random())
-        asteroid.setMass(0.1)
+        asteroid.setMass(0.01)
         asteroid.setBounce(1.0)
         
         return asteroid

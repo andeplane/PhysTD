@@ -32,13 +32,13 @@ export default class Demo extends Phaser.Scene {
     this.load.setBaseURL(window.location.href)
     this.load.path = 'assets/'
     this.load.image('fire', 'particles/muzzleflash3.png');
-    this.load.image('sky', 'sky.png');
+    this.load.image('stars', 'stars.jpg');
     this.load.image('earth', 'planets/earth_generated.png');
     this.load.spritesheet('asteroids', 'asteroids.png', { frameWidth: 125, frameHeight: 125 });
   }
 
   create() {
-    this.add.image(400, 300, 'sky');
+    this.add.image(400, 300, 'stars');
     this.fire = this.add.particles('fire');
 
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -48,7 +48,7 @@ export default class Demo extends Phaser.Scene {
     PlanetFactory = new Planet(this)
     AsteroidFactory = new Asteroid(this, PlanetFactory)
 
-    const planet = PlanetFactory.Create(this, {x: 400, y: 400, name: "Planet", texture: "planet"})
+    const planet = PlanetFactory.Create(this, {x: 400, y: 400, name: "Planet", texture: "earth"})
     this.physics.add.collider(planet, AsteroidFactory.group, this.collidePlanet);
   }
 
