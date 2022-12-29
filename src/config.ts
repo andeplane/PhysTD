@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 
 export default {
   type: Phaser.AUTO,
-  backgroundColor: '#33A5E7',
+  backgroundColor: '#000',
   title: 'Astro defender',
   url: 'https://andeplane.github.io/astrodefender',
   scale: {
