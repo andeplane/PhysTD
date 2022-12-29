@@ -42,11 +42,13 @@ Defense mechanisms:
     - Special upgrades
      - nuclear (various radius and strength)
      - relativity boost (slows time for asteroids)
-     - 
+     - Mirrors / portals
 
  - Weapons:
-   - Lasers
+   - Lasers (keywords: vaporize, X MW, project, flux, heat, hunter, )
+    - 
    - Nuclear
+    - 
    - 
 
 GFX:
