@@ -3,24 +3,9 @@ import Asteroid from '../objects/Asteroid';
 import PlanetFactory from '../objects/Planet'
 import TurretFactory from '../objects/Turret'
 import Wave from '../waves/Wave';
+import Level from './Level';
 
-type GameObjectWithBody = Phaser.Types.Physics.Arcade.GameObjectWithBody
-type SpriteWithDynamicBody = Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
-type GameObject = Phaser.GameObjects.GameObject
-
-export default class Level1 extends Phaser.Scene {
-  gameOver: boolean = false
-  population: number = 10
-  lastAddUpdate: Date = new Date()
-  lastFireUpdate: Date = new Date()
-  planetFactory?: PlanetFactory
-  turretFactory?: TurretFactory
-  
-  startedAt?: Date
-  waves: Wave[] = []
-  moon?: Phaser.Types.Physics.Arcade.ImageWithDynamicBody
-  cursors?: Phaser.Types.Input.Keyboard.CursorKeys
-  fire?: Phaser.GameObjects.Particles.ParticleEmitterManager
+export default class Level1 extends Level {
   constructor() {
     super('Level1');
   }
@@ -48,8 +33,6 @@ export default class Level1 extends Phaser.Scene {
       'knowledge': 0
     })
 
-    this.cursors = this.input.keyboard.createCursorKeys();
-    
     this.planetFactory = new PlanetFactory(this)
     
     const angularVelocity = Math.PI * (Math.random() - 0.5)
@@ -110,7 +93,7 @@ export default class Level1 extends Phaser.Scene {
   }
 
   update(time: number, delta: number) {
-    if (this.gameOver || !this.cursors, !this.planetFactory) {
+    if (this.gameOver || !this.planetFactory) {
       return;
     }
 
@@ -129,15 +112,15 @@ export default class Level1 extends Phaser.Scene {
     }
 
     if (this.planetFactory) {
-      this.planetFactory.update(delta, this.planetFactory?.planets, currentWave.asteroidFactory?.asteroids)
+      this.planetFactory.update(delta, this.planetFactory?.planets, currentWave?.asteroidFactory?.asteroids)
     }
 
     if (this.turretFactory) {
-      this.turretFactory.update(delta, this.planetFactory?.planets, currentWave.asteroidFactory?.asteroids)
+      this.turretFactory.update(delta, this.planetFactory?.planets, currentWave?.asteroidFactory?.asteroids)
     }
   }
 
-  collidePlanet = (planet: GameObjectWithBody, asteroid: GameObjectWithBody) => {
+  collidePlanet = (planet: Phaser.Types.Physics.Arcade.GameObjectWithBody, asteroid: Phaser.Types.Physics.Arcade.GameObjectWithBody) => {
     if (!this.fire) {
       return
     }
