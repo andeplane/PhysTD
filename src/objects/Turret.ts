@@ -29,11 +29,36 @@ export class Turret {
         this.sprite.disableInteractive()
     }
 
-    update(delta: number, group: Phaser.Physics.Arcade.Group, asteroids?: Asteroid[]) {
-        const direction = {
-            x: this.sprite.x - this.planet.sprite.x,
-            y: this.sprite.y - this.planet.sprite.y
-        }
+    update(delta: number, level: Level) {
+        const planetPosition = new Phaser.Math.Vector2(this.planet.sprite.x,this.planet.sprite.y)
+        const turretPosition = new Phaser.Math.Vector2(this.sprite.x,this.sprite.y)
+        const turretDirection = turretPosition.clone().subtract(planetPosition).normalize()
+
+        level.asteroidFactory?.asteroids.forEach(asteroid => {
+            const asteroidPosition = new Phaser.Math.Vector2(asteroid.sprite.x, asteroid.sprite.y)
+            const distance = asteroidPosition.distance(turretPosition)
+            const asteroidDirection = asteroidPosition.clone().subtract(planetPosition).normalize()
+            const angle = Math.acos(asteroidDirection.dot(turretDirection))
+            if (angle < 0.1) {
+                asteroid.sprite.disableBody(true, true);
+    
+                level.fire!.createEmitter({
+                    alpha: { start: 1, end: 0 },
+                    scale: { start: 0.5, end: 2.5 },
+                    tint: { start: 0xff945e, end: 0xff945e },
+                    speed: 20,
+                    accelerationY: -300,
+                    angle: { min: -85, max: -95 },
+                    rotate: { min: -180, max: 180 },
+                    lifespan: { min: 1000, max: 1100 },
+                    blendMode: 'ADD',
+                    frequency: 110,
+                    maxParticles: 10,
+                    x: asteroidPosition.x,
+                    y: asteroidPosition.y
+                });
+            }
+        })
     }
 }
 
@@ -67,6 +92,7 @@ export default class TurretFactory extends GameObject {
         this.group.rotateAround(planetPosition, this.planet.angularVelocity*delta/1000)
         this.turrets.forEach(turret => {
             turret.sprite.setRotation(turret.sprite.rotation + this.planet.angularVelocity*delta/1000)
+            turret.update(delta, level)
         })
     }
 }
