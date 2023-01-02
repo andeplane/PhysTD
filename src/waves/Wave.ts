@@ -65,13 +65,18 @@ export default class Wave {
         }
         this.elapsedTime += delta
         this.asteroidFactory.update(delta, celestialBodies)
-        const expectedNumMeteors = Math.ceil((this.units.meteors?.count || 0) / this.spawnDuration * this.elapsedTime)
-        
-        while (this.numMeteors < expectedNumMeteors) {
-            const x = 1000
-            const y = 200 + 20 * Math.random()
-            this.asteroidFactory.create(scene, {x, y})
-            this.numMeteors += 1
+        if (this.units.meteors) {
+            const expectedNumMeteors = Math.ceil((this.units.meteors?.count || 0) / this.spawnDuration * this.elapsedTime)
+            
+            while (this.numMeteors < expectedNumMeteors) {
+                const x = 1000
+                const y = 200 + 20 * Math.random()
+                const {sizeMin, sizeMax} = this.units.meteors
+                const size = sizeMin + (sizeMax-sizeMin) * Math.random()
+                
+                this.asteroidFactory.create(scene, {x, y, size})
+                this.numMeteors += 1
+            }
         }
     }
 

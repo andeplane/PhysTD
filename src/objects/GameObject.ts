@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { Planet } from './Planet';
+import { Asteroid } from './Asteroid';
 
 export default abstract class GameObjectFactory {
     group: Phaser.GameObjects.Group
@@ -8,5 +9,5 @@ export default abstract class GameObjectFactory {
         this.group = scene.physics.add.group()
     }
     abstract destroy(): void
-    abstract update(delta: number, celestialBodies: Planet[]): void
+    abstract update(delta: number, planets: Planet[], asteroids?: Asteroid[]): void
 }

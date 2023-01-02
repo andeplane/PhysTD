@@ -1,4 +1,5 @@
 import GameObject from "./GameObject";
+import {Asteroid} from "./Asteroid";
 import {Planet} from './Planet'
 
 interface CreateProps {
@@ -43,7 +44,7 @@ export default class TurretFactory extends GameObject {
         
     }
 
-    update(delta: number, celestialBodies: Planet[]) {
+    update(delta: number, planets: Planet[], asteroids?: Asteroid[]) {
         const planetPosition = {
             x: this.planet.sprite.x,
             y: this.planet.sprite.y

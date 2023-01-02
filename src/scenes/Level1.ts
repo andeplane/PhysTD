@@ -52,7 +52,7 @@ export default class Level1 extends Phaser.Scene {
     
     this.planetFactory = new PlanetFactory(this)
     
-    const angularVelocity = 720/1000 //0.1 * 720 * (Math.random() - 0.5) 
+    const angularVelocity = Math.PI * (Math.random() - 0.5)
     const planet = this.planetFactory.create(this, {angularVelocity, x: 400, y: 512, name: "Planet", texture: "earth"})
     this.turretFactory = new TurretFactory(this, planet)
     const turret = this.turretFactory.create(this, {angle: 0, name: "Turret1", texture: "turret2"})
@@ -129,11 +129,11 @@ export default class Level1 extends Phaser.Scene {
     }
 
     if (this.planetFactory) {
-      this.planetFactory.update(delta, this.planetFactory?.planets)
+      this.planetFactory.update(delta, this.planetFactory?.planets, currentWave.asteroidFactory?.asteroids)
     }
 
     if (this.turretFactory) {
-      this.turretFactory.update(delta, this.planetFactory?.planets)
+      this.turretFactory.update(delta, this.planetFactory?.planets, currentWave.asteroidFactory?.asteroids)
     }
   }
 
