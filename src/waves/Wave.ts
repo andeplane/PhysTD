@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import Asteroid from '../objects/Asteroid';
 import { Planet } from '../objects/Planet';
 import Level from '../scenes/Level';
 
@@ -37,7 +36,6 @@ interface UnitsProps {
 interface WaveProps {
     duration: number
     spawnDuration: number
-    group: Phaser.GameObjects.Group
     units: UnitsProps
 }
 
@@ -51,21 +49,14 @@ export default class Wave {
     private numComets: number = 0
     private numAliens: number = 0
     private units: UnitsProps
-    public group: Phaser.GameObjects.Group
-    public asteroidFactory: Asteroid|undefined
     constructor(options: WaveProps) {
         this.duration = options.duration
         this.spawnDuration = options.spawnDuration
-        this.group = options.group
         this.units = options.units
     }
 
     update(delta: number, level: Level) {
-        if (!this.asteroidFactory) {
-            this.asteroidFactory = new Asteroid(level)
-        }
         this.elapsedTime += delta
-        this.asteroidFactory.update(delta, level)
         if (this.units.meteors) {
             const expectedNumMeteors = Math.ceil((this.units.meteors?.count || 0) / this.spawnDuration * this.elapsedTime)
             
@@ -75,7 +66,7 @@ export default class Wave {
                 const {sizeMin, sizeMax} = this.units.meteors
                 const size = sizeMin + (sizeMax-sizeMin) * Math.random()
                 
-                this.asteroidFactory.create(level, {x, y, size})
+                level.asteroidFactory!.create(level, {x, y, size})
                 this.numMeteors += 1
             }
         }

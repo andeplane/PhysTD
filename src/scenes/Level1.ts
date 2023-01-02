@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import AsteroidFactory from '../objects/Asteroid';
 import Asteroid from '../objects/Asteroid';
 import PlanetFactory from '../objects/Planet'
 import TurretFactory from '../objects/Turret'
@@ -34,20 +35,19 @@ export default class Level1 extends Level {
     })
 
     this.planetFactory = new PlanetFactory(this)
+    this.asteroidFactory = new AsteroidFactory(this)
     
     const angularVelocity = Math.PI * (Math.random() - 0.5)
     const planet = this.planetFactory.create(this, {angularVelocity, x: 400, y: 512, name: "Planet", texture: "earth"})
     this.turretFactory = new TurretFactory(this, planet)
     const turret = this.turretFactory.create(this, {angle: 0, name: "Turret1", texture: "turret2"})
     
-    const group = this.physics.add.group()
-    this.physics.add.collider(planet.sprite, group, this.collidePlanet);
-    this.physics.add.collider(group, group);
+    this.physics.add.collider(planet.sprite, this.asteroidFactory.group, this.collidePlanet);
+    this.physics.add.collider(this.asteroidFactory.group, this.asteroidFactory.group);
     
     this.waves.push(new Wave({
       duration: 60000,
       spawnDuration: 20000,
-      group: group,
       units: {
         meteors: {
           count: 10,
@@ -57,6 +57,7 @@ export default class Level1 extends Level {
       }
     })
     )
+    this.currentWave = this.waves[0]
 
     this.input.on("wheel",  (pointer: any, gameObjects: any, deltaX: any, deltaY: any, deltaZ: any) => {
       if (deltaY > 0) {
@@ -97,22 +98,20 @@ export default class Level1 extends Level {
       return;
     }
 
-    let currentWave = this.waves[0]
-    if (this.waves.length > 0) {
-      if (currentWave.isFinished()) {
-        this.waves.splice(0, 1)
-        if (this.waves.length > 0) {
-          currentWave = this.waves[0]
-        }
+    if (this.currentWave && this.currentWave.isFinished()) {
+      this.waves.splice(0, 1)
+      if (this.waves.length > 0) {
+        this.currentWave = this.waves[0]
       }
     }
-
-    if (currentWave) {
-      currentWave.update(delta, this)
+    
+    if (this.currentWave) {
+      this.currentWave.update(delta, this)
     }
 
     this.planetFactory!.update(delta, this)
     this.turretFactory!.update(delta, this)
+    this.asteroidFactory!.update(delta, this)
   }
 
   collidePlanet = (planet: Phaser.Types.Physics.Arcade.GameObjectWithBody, asteroid: Phaser.Types.Physics.Arcade.GameObjectWithBody) => {
