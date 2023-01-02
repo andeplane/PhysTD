@@ -1,6 +1,7 @@
 import GameObject from "./GameObject";
 import {Asteroid} from "./Asteroid";
 import {Planet} from './Planet'
+import Level from "../scenes/Level";
 
 interface CreateProps {
     angle: number
@@ -56,7 +57,7 @@ export default class TurretFactory extends GameObject {
         
     }
 
-    update(delta: number, planets: Planet[], asteroids?: Asteroid[]) {
+    update(delta: number, level: Level) {
         // Rotate turret both around planet and itself
         const planetPosition = {
             x: this.planet.sprite.x,

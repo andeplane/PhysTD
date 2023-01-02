@@ -108,16 +108,11 @@ export default class Level1 extends Level {
     }
 
     if (currentWave) {
-      currentWave.update(delta, this, this.planetFactory?.planets)
+      currentWave.update(delta, this)
     }
 
-    if (this.planetFactory) {
-      this.planetFactory.update(delta, this.planetFactory?.planets, currentWave?.asteroidFactory?.asteroids)
-    }
-
-    if (this.turretFactory) {
-      this.turretFactory.update(delta, this.planetFactory?.planets, currentWave?.asteroidFactory?.asteroids)
-    }
+    this.planetFactory!.update(delta, this)
+    this.turretFactory!.update(delta, this)
   }
 
   collidePlanet = (planet: Phaser.Types.Physics.Arcade.GameObjectWithBody, asteroid: Phaser.Types.Physics.Arcade.GameObjectWithBody) => {

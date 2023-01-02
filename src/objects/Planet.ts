@@ -1,5 +1,6 @@
 import GameObject from "./GameObject";
 import {Asteroid} from './Asteroid'
+import Level from "../scenes/Level";
 
 interface CreateProps {
     angularVelocity: number
@@ -45,7 +46,7 @@ export default class PlanetFactory extends GameObject {
         
     }
 
-    update(delta: number, planets: Planet[], asteroids?: Asteroid[]) {
+    update(delta: number, level: Level) {
         this.planets.forEach(planet => {
             planet.sprite.setAcceleration(0, 0)
             planet.sprite.setRotation(planet.sprite.rotation + planet.angularVelocity * delta / 1000)

@@ -1,3 +1,4 @@
+import Level from "../scenes/Level";
 import GameObject from "./GameObject";
 import {Planet} from "./Planet";
 
@@ -39,8 +40,8 @@ export default class AsteroidFactory extends GameObject {
         
     }
 
-    update(delta: number, planets: Planet[], asteroids?: Asteroid[]) {
-        planets.forEach(planet => {
+    update(delta: number, level: Level) {
+        level.planetFactory!.planets.forEach(planet => {
             // Calculate asteroid gravity
             this.asteroids.forEach(asteroid => {
                 const delta = new Phaser.Math.Vector2(planet.sprite.body.center.x - asteroid.sprite.body.center.x, planet.sprite.body.center.y - asteroid.sprite.body.center.y);

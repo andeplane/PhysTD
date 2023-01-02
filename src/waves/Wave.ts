@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Asteroid from '../objects/Asteroid';
 import { Planet } from '../objects/Planet';
+import Level from '../scenes/Level';
 
 interface MeteorProps {
     count: number,
@@ -59,12 +60,12 @@ export default class Wave {
         this.units = options.units
     }
 
-    update(delta: number, scene: Phaser.Scene, celestialBodies: Planet[]) {
+    update(delta: number, level: Level) {
         if (!this.asteroidFactory) {
-            this.asteroidFactory = new Asteroid(scene)
+            this.asteroidFactory = new Asteroid(level)
         }
         this.elapsedTime += delta
-        this.asteroidFactory.update(delta, celestialBodies)
+        this.asteroidFactory.update(delta, level)
         if (this.units.meteors) {
             const expectedNumMeteors = Math.ceil((this.units.meteors?.count || 0) / this.spawnDuration * this.elapsedTime)
             
@@ -74,7 +75,7 @@ export default class Wave {
                 const {sizeMin, sizeMax} = this.units.meteors
                 const size = sizeMin + (sizeMax-sizeMin) * Math.random()
                 
-                this.asteroidFactory.create(scene, {x, y, size})
+                this.asteroidFactory.create(level, {x, y, size})
                 this.numMeteors += 1
             }
         }
