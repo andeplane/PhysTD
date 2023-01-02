@@ -26,6 +26,7 @@ Cool mechanics:
  - bounce
  - reflections
  - dimensions
+ - multiple planets
  - needs energy (solar cells, nuclear)
  - shadow by sun, "invisible" units, disable energy
  - invisible units: they do not interact with electromagnetism

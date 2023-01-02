@@ -1,5 +1,5 @@
 import GameObject from "./GameObject";
-import Planet from "./Planet";
+import {Planet} from "./Planet";
 
 interface CreateProps {
     x: number
@@ -7,20 +7,9 @@ interface CreateProps {
 }
 
 export default class Asteroid extends GameObject {
-    asteroids: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody[]
-    group: Phaser.GameObjects.Group
+    asteroids: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody[] = []
     
-    constructor(group: Phaser.GameObjects.Group) {
-        super()
-        this.group = group
-        this.asteroids = []
-    }
-
-    Preload() {
-
-    }
-    
-    Create(scene: Phaser.Scene, {x, y}: CreateProps) {
+    create(scene: Phaser.Scene, {x, y}: CreateProps) {
         const asteroid = scene.physics.add.sprite(x, y, 'asteroids', Math.floor(Math.random() * 16)).setScale(0.1)
         this.group.add(asteroid)
         this.asteroids.push(asteroid)
@@ -34,16 +23,16 @@ export default class Asteroid extends GameObject {
         return asteroid
     }
 
-    Destroy() {
+    destroy() {
         
     }
 
-    Update(delta: number, celestialBodies: Phaser.Types.Physics.Arcade.ImageWithDynamicBody[]) {
+    update(delta: number, celestialBodies: Planet[]) {
         const planet = celestialBodies[0]
         
         // Calculate asteroid gravity
         this.asteroids.forEach(asteroid => {
-            const delta = new Phaser.Math.Vector2(planet.body.center.x - asteroid.body.center.x, planet.body.center.y - asteroid.body.center.y);
+            const delta = new Phaser.Math.Vector2(planet.sprite.body.center.x - asteroid.body.center.x, planet.sprite.body.center.y - asteroid.body.center.y);
             const deltaLength = delta.length()
             delta.normalize()
             delta.scale(1.0/(deltaLength*deltaLength))

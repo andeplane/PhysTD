@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import Asteroid from '../objects/Asteroid';
+import { Planet } from '../objects/Planet';
 
 interface MeteorProps {
     count: number,
@@ -58,18 +59,18 @@ export default class Wave {
         this.units = options.units
     }
 
-    update(delta: number, scene: Phaser.Scene, celestialBodies: Phaser.Types.Physics.Arcade.ImageWithDynamicBody[]) {
+    update(delta: number, scene: Phaser.Scene, celestialBodies: Planet[]) {
         if (!this.asteroidFactory) {
-            this.asteroidFactory = new Asteroid(this.group)
+            this.asteroidFactory = new Asteroid(scene)
         }
         this.elapsedTime += delta
-        this.asteroidFactory.Update(delta, celestialBodies)
+        this.asteroidFactory.update(delta, celestialBodies)
         const expectedNumMeteors = Math.ceil((this.units.meteors?.count || 0) / this.spawnDuration * this.elapsedTime)
         
         while (this.numMeteors < expectedNumMeteors) {
             const x = 1000
             const y = 200 + 20 * Math.random()
-            this.asteroidFactory.Create(scene, {x, y})
+            this.asteroidFactory.create(scene, {x, y})
             this.numMeteors += 1
         }
     }

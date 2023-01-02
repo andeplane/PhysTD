@@ -1,19 +1,21 @@
 import Phaser from 'phaser';
 import Asteroid from '../objects/Asteroid';
-import Planet from '../objects/Planet'
+import PlanetFactory from '../objects/Planet'
+import TurretFactory from '../objects/Turret'
 import Wave from '../waves/Wave';
 
 type GameObjectWithBody = Phaser.Types.Physics.Arcade.GameObjectWithBody
 type SpriteWithDynamicBody = Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
 type GameObject = Phaser.GameObjects.GameObject
 
-let PlanetFactory: Planet|undefined
-
 export default class Level1 extends Phaser.Scene {
   gameOver: boolean = false
   population: number = 10
   lastAddUpdate: Date = new Date()
   lastFireUpdate: Date = new Date()
+  planetFactory?: PlanetFactory
+  turretFactory?: TurretFactory
+  
   startedAt?: Date
   waves: Wave[] = []
   moon?: Phaser.Types.Physics.Arcade.ImageWithDynamicBody
@@ -28,23 +30,35 @@ export default class Level1 extends Phaser.Scene {
     this.load.path = 'assets/'
     this.load.image('fire', 'particles/muzzleflash3.png');
     this.load.image('stars', 'stars.jpg');
+    this.load.image('turret2', 'turrets/turret2.png');
     this.load.image('earth', 'planets/earth_generated.png');
     this.load.spritesheet('asteroids', 'asteroids.png', { frameWidth: 125, frameHeight: 125 });
   }
 
   create() {
     const { width, height } = this.scale
-		this.add.image(width * 0.5, height * 0.5, 'stars').setScrollFactor(0.2, 0.2)
+		const stars = this.add.image(width * 0.5, height * 0.5, 'stars').setScrollFactor(0.2, 0.2)
+    
     this.fire = this.add.particles('fire');
+
+    this.registry.set('resources', {
+      'energy': 0,
+      'metal': 0,
+      'minerals': 0,
+      'knowledge': 0
+    })
 
     this.cursors = this.input.keyboard.createCursorKeys();
     
-    PlanetFactory = new Planet(this)
+    this.planetFactory = new PlanetFactory(this)
     
-    const planet = PlanetFactory.Create(this, {x: 400, y: 512, name: "Planet", texture: "earth"})
+    const angularVelocity = 720/1000 //0.1 * 720 * (Math.random() - 0.5) 
+    const planet = this.planetFactory.create(this, {angularVelocity, x: 400, y: 512, name: "Planet", texture: "earth"})
+    this.turretFactory = new TurretFactory(this, planet)
+    const turret = this.turretFactory.create(this, {angle: 0, name: "Turret1", texture: "turret2"})
     
     const group = this.physics.add.group()
-    this.physics.add.collider(planet, group, this.collidePlanet);
+    this.physics.add.collider(planet.sprite, group, this.collidePlanet);
     this.physics.add.collider(group, group);
     
     this.waves.push(new Wave({
@@ -80,9 +94,8 @@ export default class Level1 extends Phaser.Scene {
 
       // this.cameras.main.centerOn(PlanetFactory?.planets[0].body.position.x, PlanetFactory?.planets[0].body.position.y);
       // this.cameras.main.pan(pointer.worldX, pointer.worldY, 2000, "Power2");
-    
     });
-
+    
     this.input.on('pointermove', (pointer: any) => {
         if (!pointer.isDown) return;
 
@@ -97,7 +110,7 @@ export default class Level1 extends Phaser.Scene {
   }
 
   update(time: number, delta: number) {
-    if (this.gameOver || !this.cursors) {
+    if (this.gameOver || !this.cursors, !this.planetFactory) {
       return;
     }
 
@@ -112,24 +125,15 @@ export default class Level1 extends Phaser.Scene {
     }
 
     if (currentWave) {
-      currentWave.update(delta, this, PlanetFactory?.planets)
+      currentWave.update(delta, this, this.planetFactory?.planets)
     }
 
-    // if (AsteroidFactory) {
-    //   // Add asteroids
-    //   const now = (new Date())
-    //   const delta = now.valueOf() - this.lastAddUpdate.valueOf()
-    //   if (delta > 500 && AsteroidFactory.asteroids.length < 100) {
-    //     this.lastAddUpdate = now
-    //     const x = 1000
-    //     const y = 200 + 20 * Math.random()
-    //     AsteroidFactory.Create(this, {x, y})
-    //   }
-    //   AsteroidFactory.Update()
-    // }
+    if (this.planetFactory) {
+      this.planetFactory.update(delta, this.planetFactory?.planets)
+    }
 
-    if (PlanetFactory) {
-      PlanetFactory.Update(delta, [])
+    if (this.turretFactory) {
+      this.turretFactory.update(delta, this.planetFactory?.planets)
     }
   }
 
