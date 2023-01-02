@@ -1,32 +1,26 @@
 import Phaser from 'phaser';
 import Asteroid from '../objects/Asteroid';
 import Planet from '../objects/Planet'
+import Wave from '../waves/Wave';
 
 type GameObjectWithBody = Phaser.Types.Physics.Arcade.GameObjectWithBody
 type SpriteWithDynamicBody = Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
 type GameObject = Phaser.GameObjects.GameObject
 
 let PlanetFactory: Planet|undefined
-let AsteroidFactory: Asteroid|undefined
 
 export default class Level1 extends Phaser.Scene {
-  gameOver: boolean
-  population: number
-  // populationText?: Phaser.GameObjects.Text
+  gameOver: boolean = false
+  population: number = 10
+  lastAddUpdate: Date = new Date()
+  lastFireUpdate: Date = new Date()
+  startedAt?: Date
+  waves: Wave[] = []
   moon?: Phaser.Types.Physics.Arcade.ImageWithDynamicBody
   cursors?: Phaser.Types.Input.Keyboard.CursorKeys
   fire?: Phaser.GameObjects.Particles.ParticleEmitterManager
-  lastAddUpdate: Date
-  lastFireUpdate: Date
-
   constructor() {
-    super({ key: 'Level1', active: false });
-
-    this.gameOver = false
-    this.population = 10
-    
-    this.lastAddUpdate = new Date()
-    this.lastFireUpdate = new Date()
+    super('Level1');
   }
 
   preload() {
@@ -45,14 +39,27 @@ export default class Level1 extends Phaser.Scene {
 
     this.cursors = this.input.keyboard.createCursorKeys();
     
-    // this.populationText = this.add.text(16, 16, `Population: ${this.population}`, { fontSize: '32px' })
-    
     PlanetFactory = new Planet(this)
-    AsteroidFactory = new Asteroid(this, PlanetFactory)
-
+    
     const planet = PlanetFactory.Create(this, {x: 400, y: 512, name: "Planet", texture: "earth"})
-    this.physics.add.collider(planet, AsteroidFactory.group, this.collidePlanet);
-    this.physics.add.collider(AsteroidFactory.group, AsteroidFactory.group);
+    
+    const group = this.physics.add.group()
+    this.physics.add.collider(planet, group, this.collidePlanet);
+    this.physics.add.collider(group, group);
+    
+    this.waves.push(new Wave({
+      duration: 60000,
+      spawnDuration: 20000,
+      group: group,
+      units: {
+        meteors: {
+          count: 10,
+          sizeMin: 1,
+          sizeMax: 2
+        }
+      }
+    })
+    )
 
     this.input.on("wheel",  (pointer: any, gameObjects: any, deltaX: any, deltaY: any, deltaZ: any) => {
       if (deltaY > 0) {
@@ -89,27 +96,40 @@ export default class Level1 extends Phaser.Scene {
     this.cameras.main.setZoom(2)
   }
 
-  update() {
-    
-    if (this.gameOver || !this.cursors)
-    {
+  update(time: number, delta: number) {
+    if (this.gameOver || !this.cursors) {
       return;
     }
 
-    if (AsteroidFactory) {
-      // Add asteroids
-      const now = (new Date())
-      const delta = now.valueOf() - this.lastAddUpdate.valueOf()
-      if (delta > 500 && AsteroidFactory.asteroids.length < 100) {
-        this.lastAddUpdate = now
-        const x = 1000
-        const y = 200 + 20 * Math.random()
-        AsteroidFactory.Create(this, {x, y})
+    let currentWave = this.waves[0]
+    if (this.waves.length > 0) {
+      if (currentWave.isFinished()) {
+        this.waves.splice(0, 1)
+        if (this.waves.length > 0) {
+          currentWave = this.waves[0]
+        }
       }
-      AsteroidFactory.Update()
     }
+
+    if (currentWave) {
+      currentWave.update(delta, this, PlanetFactory?.planets)
+    }
+
+    // if (AsteroidFactory) {
+    //   // Add asteroids
+    //   const now = (new Date())
+    //   const delta = now.valueOf() - this.lastAddUpdate.valueOf()
+    //   if (delta > 500 && AsteroidFactory.asteroids.length < 100) {
+    //     this.lastAddUpdate = now
+    //     const x = 1000
+    //     const y = 200 + 20 * Math.random()
+    //     AsteroidFactory.Create(this, {x, y})
+    //   }
+    //   AsteroidFactory.Update()
+    // }
+
     if (PlanetFactory) {
-      PlanetFactory.Update()
+      PlanetFactory.Update(delta, [])
     }
   }
 
@@ -140,7 +160,6 @@ export default class Level1 extends Phaser.Scene {
     if (planet.name === "Planet") {
       //  Add and update the score
       this.population -= 1;
-      // this.populationText.setText('Population: ' + this.population);
     }
   }
 }

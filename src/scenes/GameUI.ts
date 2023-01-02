@@ -19,6 +19,6 @@ export default class MainMenuScene extends Phaser.Scene {
 	}
 
 	update() {
-		console.log("Updating UI scene")
+		// console.log("Updating UI scene")
 	}
 }

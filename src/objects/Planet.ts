@@ -42,7 +42,7 @@ export default class Planet extends GameObject {
         
     }
 
-    Update() {
+    Update(delta: number, celestialBodies: Phaser.Types.Physics.Arcade.ImageWithDynamicBody[]) {
         this.planets.forEach(planet => {
             planet.setAcceleration(0, 0)
         })

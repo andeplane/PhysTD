@@ -9,13 +9,11 @@ interface CreateProps {
 export default class Asteroid extends GameObject {
     asteroids: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody[]
     group: Phaser.GameObjects.Group
-    PlanetFactory: Planet
-
-    constructor(scene: Phaser.Scene, PlanetFactory: Planet) {
+    
+    constructor(group: Phaser.GameObjects.Group) {
         super()
-        this.group = scene.physics.add.group()
+        this.group = group
         this.asteroids = []
-        this.PlanetFactory = PlanetFactory
     }
 
     Preload() {
@@ -40,8 +38,9 @@ export default class Asteroid extends GameObject {
         
     }
 
-    Update() {
-        const planet = this.PlanetFactory.planets[0]
+    Update(delta: number, celestialBodies: Phaser.Types.Physics.Arcade.ImageWithDynamicBody[]) {
+        const planet = celestialBodies[0]
+        
         // Calculate asteroid gravity
         this.asteroids.forEach(asteroid => {
             const delta = new Phaser.Math.Vector2(planet.body.center.x - asteroid.body.center.x, planet.body.center.y - asteroid.body.center.y);
