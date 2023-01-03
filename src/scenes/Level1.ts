@@ -17,6 +17,7 @@ export default class Level1 extends Level {
     this.load.image('fire', 'particles/muzzleflash3.png');
     this.load.image('stars', 'stars.jpg');
     this.load.image('turret2', 'turrets/turret2.png');
+    this.load.image('laser', 'turrets/laser.png');
     this.load.image('earth', 'planets/earth_generated.png');
     this.load.spritesheet('asteroids', 'asteroids.png', { frameWidth: 125, frameHeight: 125 });
   }
@@ -26,6 +27,7 @@ export default class Level1 extends Level {
 		const stars = this.add.image(width * 0.5, height * 0.5, 'stars').setScrollFactor(0.2, 0.2)
     
     this.fire = this.add.particles('fire');
+    this.laser = this.add.particles('laser');
 
     this.registry.set('resources', {
       'energy': 0,

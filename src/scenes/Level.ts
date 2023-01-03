@@ -12,4 +12,5 @@ export default class Level extends Phaser.Scene {
     turretFactory?: TurretFactory
     asteroidFactory?: AsteroidFactory
     fire?: Phaser.GameObjects.Particles.ParticleEmitterManager
+    laser?: Phaser.GameObjects.Particles.ParticleEmitterManager
 }

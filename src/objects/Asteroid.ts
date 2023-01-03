@@ -11,7 +11,7 @@ interface CreateProps {
 export class Asteroid {
     sprite: Phaser.Types.Physics.Arcade.ImageWithDynamicBody
     size: number
-
+    disabled: boolean = false
     constructor(scene: Phaser.Scene, group: Phaser.GameObjects.Group, {x, y, size}: CreateProps) {
         const scale = 0.1 * size
         this.sprite = scene.physics.add.sprite(x, y, 'asteroids', Math.floor(Math.random() * 16)).setScale(scale)
@@ -36,8 +36,9 @@ export default class AsteroidFactory extends GameObject {
         return asteroid
     }
 
-    destroy() {
-        
+    destroy(asteroid: Asteroid) {
+        asteroid.sprite.disableBody(true, true);
+        asteroid.disabled = true
     }
 
     update(delta: number, level: Level) {
